@@ -2,15 +2,17 @@ require 'mkmf'
 
 RbConfig::MAKEFILE_CONFIG['CC'] = ENV['CC'] if ENV['CC']
 
-hiredis_dir = File.join(File.dirname(__FILE__), %w{.. .. vendor hiredis})
-unless File.directory?(hiredis_dir)
-  STDERR.puts "vendor/hiredis missing, please checkout its submodule..."
-  exit 1
-end
+base = File.expand_path(File.join(File.dirname(__FILE__), '..', '..'))
 
-hiredis_makefile = File.join(File.dirname(__FILE__), %w{.. .. vendor hiredis Makefile})
+hiredis_dir = File.join(base, %w{vendor hiredis})
+
+hiredis_makefile = File.join(base, %w{vendor hiredis Makefile})
+
 unless File.file?(hiredis_makefile)
-  Dir.chdir(hiredis_dir) do
+  STDERR.puts "vendor/hiredis missing, cloning..."
+  Dir.chdir(base) do
+    success = system("git submodule init")
+    raise "Cloning hiredis failed" if !success
     success = system("git submodule update --recursive")
     raise "Cloning hiredis failed" if !success
   end
