@@ -9,7 +9,7 @@ unless File.directory?(hiredis_dir)
 end
 
 hiredis_makefile = File.join(File.dirname(__FILE__), %w{.. .. vendor hiredis Makefile})
-unless File.file?(hiredis_dir)
+unless File.file?(hiredis_makefile)
   Dir.chdir(hiredis_dir) do
     success = system("git submodule update --recursive")
     raise "Cloning hiredis failed" if !success
