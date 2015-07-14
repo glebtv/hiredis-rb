@@ -8,6 +8,14 @@ unless File.directory?(hiredis_dir)
   exit 1
 end
 
+hiredis_makefile = File.join(File.dirname(__FILE__), %w{.. .. vendor hiredis Makefile})
+unless File.file?(hiredis_dir)
+  Dir.chdir(hiredis_dir) do
+    success = system("git submodule update --recursive")
+    raise "Cloning hiredis failed" if !success
+  end
+end
+
 RbConfig::CONFIG['configure_args'] =~ /with-make-prog\=(\w+)/
 make_program = $1 || ENV['make']
 make_program ||= case RUBY_PLATFORM
